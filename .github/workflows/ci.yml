@@ -38,12 +38,11 @@ jobs:
       - name: linux make
         if: ${{ matrix.os == 'linux' }}
         run: |
+          cd schilytools
           if [ "${{ matrix.arch }}" = 'x86_64' ]; then
-            cd schilytools
             make
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
-            cd schilytools
             make ARCH=armv7 OSNAME=linux
             make install INS_BASE=../build INS_RBASE=../build
           fi
@@ -51,13 +50,14 @@ jobs:
       - name: android make
         if: ${{ matrix.os == 'android' }}
         run: |
+          cd schilytools
+          setenv CONFIG_RMTCALL `pwd`/conf/runrmt_android
+          setenv CONFIG_RMTHOST NONE
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
-            cd schilytools
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
             make ARCH=armv8 OSNAME=linux CCOM=gcc "CC_COM=$CC"
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
-            cd schilytools
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
             make ARCH=armv7 OSNAME=linux CCOM=gcc "CC_COM=$CC"
             make install INS_BASE=../build INS_RBASE=../build
