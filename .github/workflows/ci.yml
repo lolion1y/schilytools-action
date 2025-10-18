@@ -10,13 +10,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  x64-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
            - { arch: x86_64 }
-           - { arch: aarch64 }
+           # - { arch: aarch64 }
 
     steps:
 
@@ -31,10 +31,10 @@ jobs:
         run: |
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
 
-      - name: docker
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
+      # - name: docker
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     platforms: all
 
       - name: make
         run: |
@@ -51,6 +51,54 @@ jobs:
                        apt-get install -y make gcc build-essential && \
                        make && \
                        make install INS_BASE=../build INS_RBASE=../build"
+          fi
+
+      - name: ls
+        run: ls -R
+
+      - name: push
+        run: |
+          cd ./schilytools/build || exit 1
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${{ matrix.arch }}"
+          git add .
+          git commit -m build
+          git remote add origin "https://${{ github.actor }}:${{ secrets.github_token }}@github.com/${{ github.repository }}"
+          git push -f -u origin "${{ matrix.arch }}"
+
+  arm64-build:
+    runs-on: ubuntu-latest-arm
+    strategy:
+      matrix:
+        include:
+           - { arch: aarch64 }
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: update
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+
+      - name: clone
+        run: |
+          git clone https://codeberg.org/schilytools/schilytools.git schilytools
+
+      # - name: docker
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     platforms: all
+
+      - name: make
+        run: |
+          if [ "${{ matrix.arch }}" = "aarch64" ]; then
+            cd schilytools
+            make
+            make install INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: ls
