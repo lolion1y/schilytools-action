@@ -51,19 +51,19 @@ jobs:
       - name: android make
         if: ${{ matrix.os == 'android' }}
         run: |
-          wget https://github.com/lolion1y/schilytools-action/raw/refs/heads/linux-x86_64/bin/smake -O ./smake
-          chmod +x ./smake
           cd schilytools
+          wget https://github.com/lolion1y/schilytools-action/raw/refs/heads/linux-x86_64/bin/smake -O ./smake-x64-bin
+          chmod +x ./smake-x64-bin
           export CONFIG_RMTCALL="`pwd`/conf/runrmt_android"
           export CONFIG_RMTHOST="NONE"
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ../smake ARCH=arm64 OSNAME=linux CCOM=gcc "CC_COM=$CC"
-            ../smake install INS_BASE=../build INS_RBASE=../build
+            ./smake-x64-bin ARCH=arm64 OSNAME=linux CCOM=gcc "CC_COM=$CC"
+            ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ../smake ARCH=armv7 OSNAME=linux CCOM=gcc "CC_COM=$CC"
-            ../smake install INS_BASE=../build INS_RBASE=../build
+            ./smake-x64-bin ARCH=armv7 OSNAME=linux CCOM=gcc "CC_COM=$CC"
+            ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: ls
