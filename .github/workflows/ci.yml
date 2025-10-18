@@ -2,9 +2,19 @@ name: ci
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+           - { arch: x86_64 }
+           - { arch: aarch64 }
+
     steps:
 
       - uses: actions/checkout@v3
@@ -14,8 +24,30 @@ jobs:
           sudo apt update
           sudo apt upgrade -y
 
+      - name: clone
+        run: |
+          git clone https://codeberg.org/schilytools/schilytools.git schilytools
+
+      - name: docker
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
       - name: make
         run: |
-          git clone https://codeberg.org/schilytools/schilytools.git
-          cd schilytools
-          make
+          if [ "${{ matrix.arch }}" = "x86_64" ]; then
+            cd schilytools
+            make
+          elif [ "${{ matrix.arch }}" = "aarch64" ]; then
+            docker run --rm --platform linux/arm64 \
+              -v $PWD/schilytools:/src \
+              -w /src \
+              ubuntu:latest \
+              bash -c "apt-get update && \
+                       apt-get install -y make gcc build-essential && \
+                       make"
+          fi
+
+      - name: ls
+        run: |
+          ls -R ./schilytools/OBJ/
