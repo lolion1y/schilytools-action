@@ -15,89 +15,59 @@ jobs:
     strategy:
       matrix:
         include:
-           - { arch: x86_64 }
-           # - { arch: aarch64 }
+           - { os: linux, arch: x86_64 }
+           - { os: linux, arch: armv7 }
+           - { os: android, arch: aarch64 }
+           - { os: android, arch: armv7 }
 
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update
         run: |
-          sudo apt update
-          sudo apt upgrade -y
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+
+      - name: android NDK
+        if: ${{ matrix.os == "android" }}
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
 
       - name: clone
         run: |
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
 
-      # - name: docker
-      #   uses: docker/setup-qemu-action@v3
-      #   with:
-      #     platforms: all
-
-      - name: make
+      - name: linux make
+        if: ${{ matrix.os == "linux" }}
         run: |
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             cd schilytools
             make
             make install INS_BASE=../build INS_RBASE=../build
-          elif [ "${{ matrix.arch }}" = "aarch64" ]; then
-            docker run --rm --platform linux/arm64 \
-              -v $PWD/schilytools:/src \
-              -w /src \
-              ubuntu:latest \
-              bash -c "apt-get update && \
-                       apt-get install -y make gcc build-essential && \
-                       make && \
-                       make install INS_BASE=../build INS_RBASE=../build"
+          elif [ "${{ matrix.arch }}" = "armv7" ]; then
+            cd schilytools
+            make CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CFLAGS="-march=armv7-a"
+            make install INS_BASE=../build INS_RBASE=../build
           fi
 
-      - name: ls
-        run: ls -R
-
-      - name: push
-        run: |
-          cd ./schilytools/build || exit 1
-          git init
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "${{ matrix.arch }}"
-          git add .
-          git commit -m build
-          git remote add origin "https://${{ github.actor }}:${{ secrets.github_token }}@github.com/${{ github.repository }}"
-          git push -f -u origin "${{ matrix.arch }}"
-
-  arm64-build:
-    runs-on: ubuntu-24.04-arm
-    strategy:
-      matrix:
-        include:
-           - { arch: aarch64 }
-
-    steps:
-
-      - uses: actions/checkout@v3
-
-      - name: update
-        run: |
-          sudo apt update
-          sudo apt upgrade -y
-
-      - name: clone
-        run: |
-          git clone https://codeberg.org/schilytools/schilytools.git schilytools
-
-      # - name: docker
-      #   uses: docker/setup-qemu-action@v3
-      #   with:
-      #     platforms: all
-
-      - name: make
+      - name: android make
+        if: ${{ matrix.os == "android" }}
         run: |
           if [ "${{ matrix.arch }}" = "aarch64" ]; then
             cd schilytools
-            make
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
+            export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            make CC="$CC" CFLAGS="$CFLAGS"
+            make install INS_BASE=../build INS_RBASE=../build
+          elif [ "${{ matrix.arch }}" = "armv7" ]; then
+            cd schilytools
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang"
+            export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            make CC="$CC" CFLAGS="$CFLAGS"
             make install INS_BASE=../build INS_RBASE=../build
           fi
 
@@ -110,8 +80,8 @@ jobs:
           git init
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "${{ matrix.arch }}"
+          git checkout -b "${{ matrix.os }}-${{ matrix.arch }}"
           git add .
           git commit -m build
           git remote add origin "https://${{ github.actor }}:${{ secrets.github_token }}@github.com/${{ github.repository }}"
-          git push -f -u origin "${{ matrix.arch }}"
+          git push -f -u origin "${{ matrix.os }}-${{ matrix.arch }}"
