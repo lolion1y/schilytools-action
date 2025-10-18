@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
            - { arch: x86_64 }
-           #- { arch: aarch64 }
+           - { arch: aarch64 }
 
     steps:
 
@@ -38,9 +38,11 @@ jobs:
 
       - name: make
         run: |
+          mkdir build
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             cd schilytools
             make
+            make install INS_BASE=../build
           elif [ "${{ matrix.arch }}" = "aarch64" ]; then
             docker run --rm --platform linux/arm64 \
               -v $PWD/schilytools:/src \
@@ -48,9 +50,21 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make"
+                       make && \
+                       make install INS_BASE=../build"
           fi
 
       - name: ls
+        run: ls -R
+
+      - name: push
         run: |
-          ls -R
+          cd build || exit 1
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${{ matrix.arch }}"
+          git add .
+          git commit -m build
+          git remote add origin "https://${{ github.actor }}:${{ secrets.github_token }}@github.com/${{ github.repository }}"
+          git push -f -u origin "${{ matrix.arch }}"
