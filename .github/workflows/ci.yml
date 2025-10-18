@@ -31,7 +31,7 @@ jobs:
             gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
       - name: android NDK
-        if: ${{ matrix.os }} == 'android'
+        if: ${{ matrix.os == 'android' }}
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r29
@@ -42,28 +42,28 @@ jobs:
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
 
       - name: linux make
-        if: ${{ matrix.os }} == 'linux'
+        if: ${{ matrix.os == 'linux' }}
         run: |
-          if [ "${{ matrix.arch }}" = "x86_64" ]; then
+          if [ "${{ matrix.arch }}" = 'x86_64' ]; then
             cd schilytools
             make
             make install INS_BASE=../build INS_RBASE=../build
-          elif [ "${{ matrix.arch }}" = "armv7" ]; then
+          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             cd schilytools
             make CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CFLAGS="-march=armv7-a"
             make install INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: android make
-        if: ${{ matrix.os }} == 'android'
+        if: ${{ matrix.os == 'android' }}
         run: |
-          if [ "${{ matrix.arch }}" = "aarch64" ]; then
+          if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             cd schilytools
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
             export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
             make CC="$CC" CFLAGS="$CFLAGS"
             make install INS_BASE=../build INS_RBASE=../build
-          elif [ "${{ matrix.arch }}" = "armv7" ]; then
+          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             cd schilytools
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang"
             export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
