@@ -42,7 +42,7 @@ jobs:
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             cd schilytools
             make
-            make install INS_BASE=../build ETCBASE=../build/etc
+            make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = "aarch64" ]; then
             docker run --rm --platform linux/arm64 \
               -v $PWD/schilytools:/src \
@@ -51,7 +51,7 @@ jobs:
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
                        make && \
-                       make install INS_BASE=../build ETCBASE=../build/etc"
+                       make install INS_BASE=../build INS_RBASE=../build"
           fi
 
       - name: ls
