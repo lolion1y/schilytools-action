@@ -51,8 +51,8 @@ jobs:
         if: ${{ matrix.os == 'android' }}
         run: |
           cd schilytools
-          setenv CONFIG_RMTCALL `pwd`/conf/runrmt_android
-          setenv CONFIG_RMTHOST NONE
+          export CONFIG_RMTCALL="`pwd`/conf/runrmt_android"
+          export CONFIG_RMTHOST="NONE"
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
             make ARCH=armv8 OSNAME=linux CCOM=gcc "CC_COM=$CC"
