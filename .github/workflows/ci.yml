@@ -31,7 +31,7 @@ jobs:
             gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 
       - name: android NDK
-        if: ${{ matrix.os == "android" }}
+        if: ${{ matrix.os }} == 'android'
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r29
@@ -42,7 +42,7 @@ jobs:
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
 
       - name: linux make
-        if: ${{ matrix.os == "linux" }}
+        if: ${{ matrix.os }} == 'linux'
         run: |
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             cd schilytools
@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: android make
-        if: ${{ matrix.os == "android" }}
+        if: ${{ matrix.os }} == 'android'
         run: |
           if [ "${{ matrix.arch }}" = "aarch64" ]; then
             cd schilytools
