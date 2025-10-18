@@ -1,0 +1,21 @@
+name: ci
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: update
+        run: |
+          apt update
+          apt upgrade -y
+
+      - name: make
+        run: |
+          git clone https://codeberg.org/schilytools/schilytools.git
+          cd schilytools
+          make
