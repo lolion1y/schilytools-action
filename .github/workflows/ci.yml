@@ -24,12 +24,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: update
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-
       - name: android NDK
         if: ${{ matrix.os == 'android' }}
         uses: nttld/setup-ndk@v1
@@ -50,7 +44,7 @@ jobs:
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             cd schilytools
-            make CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ CFLAGS="-march=armv7-a"
+            make ARCH=armv7 OSNAME=linux
             make install INS_BASE=../build INS_RBASE=../build
           fi
 
@@ -59,15 +53,13 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             cd schilytools
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
-            export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            make CC="$CC" CFLAGS="$CFLAGS"
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            make ARCH=armv8 OSNAME=linux CCOM=gcc "CC_COM=$CC"
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             cd schilytools
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang"
-            export CFLAGS="--sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            make CC="$CC" CFLAGS="$CFLAGS"
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            make ARCH=armv7 OSNAME=linux CCOM=gcc "CC_COM=$CC"
             make install INS_BASE=../build INS_RBASE=../build
           fi
 
