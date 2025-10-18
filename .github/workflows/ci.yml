@@ -38,7 +38,6 @@ jobs:
 
       - name: make
         run: |
-          mkdir -p ./build
           if [ "${{ matrix.arch }}" = "x86_64" ]; then
             cd schilytools
             make
@@ -59,7 +58,7 @@ jobs:
 
       - name: push
         run: |
-          cd build || exit 1
+          cd ./schilytools/build || exit 1
           git init
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
