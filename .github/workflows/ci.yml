@@ -11,8 +11,8 @@ jobs:
 
       - name: update
         run: |
-          apt update
-          apt upgrade -y
+          sudo apt update
+          sudo apt upgrade -y
 
       - name: make
         run: |
