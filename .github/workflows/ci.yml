@@ -88,7 +88,7 @@ jobs:
           git push -f -u origin "${{ matrix.os }}-${{ matrix.arch }}"
 
   arm64-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     strategy:
       fail-fast: false
       matrix:
