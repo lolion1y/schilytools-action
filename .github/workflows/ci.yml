@@ -60,11 +60,11 @@ jobs:
           export CONFIG_RMTHOST
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ./smake-x64-bin ARCH=aarch64 OSNAME=linux CCOM=clang "CC=$CC"
+            ./smake-x64-bin ARCH=aarch64 OSNAME=android CCOM=clang "CC=$CC"
             ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ./smake-x64-bin ARCH=armv7 OSNAME=linux CCOM=clang "CC=$CC"
+            ./smake-x64-bin ARCH=armv7 OSNAME=android CCOM=clang "CC=$CC"
             ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
           fi
 
