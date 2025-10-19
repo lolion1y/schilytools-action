@@ -47,12 +47,12 @@ jobs:
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc
+            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc CONFIG_NOFAIL=TRUE
             make install ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-            make ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-" CC="aarch64-linux-gnu-gcc" CCOM=gcc
+            make ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-" CC="aarch64-linux-gnu-gcc" CCOM=gcc CONFIG_NOFAIL=TRUE
             make install ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-" CC="aarch64-linux-gnu-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           fi
 
@@ -64,12 +64,12 @@ jobs:
           chmod +x ./smake-x64-bin
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ./smake-x64-bin ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC"
-            ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
+            ./smake-x64-bin ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC" CONFIG_NOFAIL=TRUE
+            ./smake-x64-bin install ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            ./smake-x64-bin ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC"
-            ./smake-x64-bin install INS_BASE=../build INS_RBASE=../build
+            ./smake-x64-bin ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC" CONFIG_NOFAIL=TRUE
+            ./smake-x64-bin install ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: ls
