@@ -17,6 +17,7 @@ jobs:
       matrix:
         include:
            - { os: linux, arch: x86_64 }
+           - { os: linux, arch: aarch64 }
            - { os: linux, arch: armv7 }
            - { os: android, arch: aarch64 }
            - { os: android, arch: armv7 }
@@ -42,11 +43,12 @@ jobs:
           cd schilytools
           if [ "${{ matrix.arch }}" = 'x86_64' ]; then
             make
-            make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             make ARCH=armv7 OSNAME=linux
-            make install INS_BASE=../build INS_RBASE=../build
+          elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
+            make ARCH=aarch64 OSNAME=linux
           fi
+          make install INS_BASE=../build INS_RBASE=../build
 
       - name: android make
         if: ${{ matrix.os == 'android' }}
