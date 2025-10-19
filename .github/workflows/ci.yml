@@ -10,17 +10,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  x64-build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
            - { os: linux, arch: x86_64 }
-           - { os: linux, arch: aarch64 }
-           - { os: linux, arch: armv7 }
-           - { os: android, arch: aarch64 }
-           - { os: android, arch: armv7 }
+           # - { os: linux, arch: aarch64 }
+           # - { os: linux, arch: armv7 }
+           # - { os: android, arch: aarch64 }
+           # - { os: android, arch: armv7 }
 
     steps:
 
@@ -41,7 +41,6 @@ jobs:
         if: ${{ matrix.os == 'linux' }}
         run: |
           cd schilytools
-          export CONFIG_NOFAIL=TRUE
           if [ "${{ matrix.arch }}" = 'x86_64' ]; then
             make
             make install INS_BASE=../build INS_RBASE=../build
@@ -61,7 +60,6 @@ jobs:
         if: ${{ matrix.os == 'android' }}
         run: |
           cd schilytools
-          export CONFIG_NOFAIL=TRUE
           wget https://github.com/lolion1y/schilytools-action/raw/refs/heads/linux-x86_64/bin/smake -O ./smake-x64-bin
           chmod +x ./smake-x64-bin
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
@@ -72,6 +70,78 @@ jobs:
             export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
             ./smake-x64-bin ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC"
             ./smake-x64-bin install ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
+          fi
+
+      - name: ls
+        run: ls -R
+
+      - name: push
+        run: |
+          cd ./schilytools/build || exit 1
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${{ matrix.os }}-${{ matrix.arch }}"
+          git add .
+          git commit -m build
+          git remote add origin "https://${{ github.actor }}:${{ secrets.github_token }}@github.com/${{ github.repository }}"
+          git push -f -u origin "${{ matrix.os }}-${{ matrix.arch }}"
+
+  arm64-build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+           # - { os: linux, arch: x86_64 }
+           - { os: linux, arch: aarch64 }
+           - { os: linux, arch: armv7 }
+           # - { os: android, arch: aarch64 }
+           # - { os: android, arch: armv7 }
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: android NDK
+        if: ${{ matrix.os == 'android' }}
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: clone
+        run: |
+          git clone https://codeberg.org/schilytools/schilytools.git schilytools
+
+      - name: linux make
+        if: ${{ matrix.os == 'linux' }}
+        run: |
+          cd schilytools
+          if [ "${{ matrix.arch }}" = 'aarch64' ]; then
+            make
+            make install INS_BASE=../build INS_RBASE=../build
+          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
+            sudo apt-get update
+            sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc
+            make install ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
+          fi
+
+      - name: android make
+        if: ${{ matrix.os == 'android' }}
+        run: |
+          cd schilytools
+          wget https://github.com/lolion1y/schilytools-action/raw/refs/heads/linux-aarch64/bin/smake -O ./smake-aarch64-bin
+          chmod +x ./smake-aarch64-bin
+          if [ "${{ matrix.arch }}" = 'aarch64' ]; then
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            ./smake-arrch64-bin ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC"
+            ./smake-aarch64-bin install ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
+          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
+            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            ./smake-aarch64-bin ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC"
+            ./smake-aarch64-bin install ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: ls
