@@ -47,13 +47,13 @@ jobs:
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-"
-            make install ARCH=armv7 OSNAME=linux INS_BASE=../build INS_RBASE=../build
+            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc
+            make install ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-            make ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-"
-            make install ARCH=aarch64 OSNAME=linux INS_BASE=../build INS_RBASE=../build
+            make ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-" CC="aarch64-linux-gnu-gcc" CCOM=gcc
+            make install ARCH=aarch64 OSNAME=linux CROSS_COMPILE="aarch64-linux-gnu-" CC="aarch64-linux-gnu-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           fi
 
       - name: android make
