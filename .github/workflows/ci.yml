@@ -48,8 +48,8 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" = 'x86_64' ]; then
           # x64 x64
-            apt-get update
-            apt-get install -y make gcc build-essential
+            sudo apt-get update
+            sudo apt-get install -y make gcc build-essential
             cd schilytools
             make
             make install INS_BASE=../build INS_RBASE=../build
@@ -130,8 +130,8 @@ jobs:
         if: ${{ matrix.os == 'linux' }}
         run: |
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
-            apt-get update
-            apt-get install -y make gcc build-essential
+            sudo apt-get update
+            sudo apt-get install -y make gcc build-essential
             cd schilytools
             make
             make install INS_BASE=../build INS_RBASE=../build
