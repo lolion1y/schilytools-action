@@ -60,7 +60,7 @@ jobs:
                        apt-get install -y make gcc build-essential && \
                        make && \
                        make install INS_BASE=../build INS_RBASE=../build && \
-                       chown -R $(id -u):$(id -g) ../build"
+                       chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # x64 linux-aarch64
             docker run --rm --platform linux/arm64 \
@@ -71,7 +71,7 @@ jobs:
                        apt-get install -y make gcc build-essential && \
                        make && \
                        make install INS_BASE=../build INS_RBASE=../build && \
-                       chown -R $(id -u):$(id -g) ../build"
+                       chown -R $(id -u):$(id -g) ./build"
           fi
 
       - name: android make
@@ -153,7 +153,7 @@ jobs:
                        apt-get install -y make gcc build-essential && \
                        make && \
                        make install INS_BASE=../build INS_RBASE=../build && \
-                       chown -R $(id -u):$(id -g) ../build"
+                       chown -R $(id -u):$(id -g) ./build"
           fi
 
       - name: android make
