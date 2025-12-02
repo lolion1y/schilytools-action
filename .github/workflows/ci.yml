@@ -88,7 +88,7 @@ jobs:
           fi
 
       - name: ls
-        run: ls -R
+        run: ls -lR
 
       - name: push
         run: |
@@ -169,7 +169,7 @@ jobs:
           fi
 
       - name: ls
-        run: ls -R
+        run: ls -lR
 
       - name: push
         run: |
