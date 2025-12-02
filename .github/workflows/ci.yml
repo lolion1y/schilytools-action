@@ -154,6 +154,7 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # aarch64 android-aarch64
+            cd schilytools
             make CFLAGS="-static" LDFLAGS="-static"
             make install CFLAGS="-static" LDFLAGS="-static" INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
