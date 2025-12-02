@@ -123,6 +123,7 @@ jobs:
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+            export ac_cv_func_mmap_fixed_mapped=yes
             make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc CONFFLAGS="--host=arm-linux-gnueabihf"
             make install ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           fi
