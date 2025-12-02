@@ -177,8 +177,8 @@ jobs:
                        cd psmake && \
                        sh ./MAKE-all && \
                        cd .. && \
-                       ./psmake/smake DEFLINKMODE=static LINKMODE=static && \
-                       ./psmake/smake install DEFLINKMODE=static LINKMODE=static INS_BASE=../build INS_RBASE=../build && \
+                       ./psmake/smake CFLAGS='-static' LDFLAGS='-static' && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # aarch64 android-armv7
@@ -191,8 +191,8 @@ jobs:
                        cd psmake && \
                        sh ./MAKE-all && \
                        cd .. && \
-                       ./psmake/smake DEFLINKMODE=static LINKMODE=static && \
-                       ./psmake/smake install DEFLINKMODE=static LINKMODE=static INS_BASE=../build INS_RBASE=../build && \
+                       ./psmake/smake CFLAGS='-static' LDFLAGS='-static' && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
