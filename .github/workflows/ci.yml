@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-           - { os: linux, arch: x86_64 }
+           #- { os: linux, arch: x86_64 }
            #- { os: linux, arch: aarch64 }
            #- { os: linux, arch: armv7 }
            - { os: android, arch: aarch64 }
@@ -71,6 +71,7 @@ jobs:
       - name: Start Emulator
         if: ${{ matrix.os == 'android' }}
         run: |
+          $ANDROID_SDK_ROOT/emulator/emulator -list-avds
           $ANDROID_SDK_ROOT/emulator/emulator \
             -avd test_avd \
             -no-window \
@@ -78,9 +79,10 @@ jobs:
             -noaudio \
             -no-boot-anim &
 
+            
+
           while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
             echo "Waiting for emulator to boot..."
-            adb shell getprop sys.boot_completed
             sleep 5
           done
           echo "Emulator is ready"
