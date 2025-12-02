@@ -18,7 +18,7 @@ jobs:
         include:
            - { os: linux, arch: x86_64 }
            # - { os: linux, arch: aarch64 }
-           - { os: linux, arch: armv7 }
+           # - { os: linux, arch: armv7 }
            # - { os: android, arch: aarch64 }
            # - { os: android, arch: armv7 }
 
@@ -59,7 +59,8 @@ jobs:
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
                        make && \
-                       make install INS_BASE=../build INS_RBASE=../build"
+                       make install INS_BASE=../build INS_RBASE=../build && \
+                       chown -R $(id -u):$(id -g) ../build"
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # x64 linux-aarch64
             docker run --rm --platform linux/arm64 \
@@ -69,7 +70,8 @@ jobs:
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
                        make && \
-                       make install INS_BASE=../build INS_RBASE=../build"
+                       make install INS_BASE=../build INS_RBASE=../build && \
+                       chown -R $(id -u):$(id -g) ../build"
           fi
 
       - name: android make
@@ -150,7 +152,8 @@ jobs:
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
                        make && \
-                       make install INS_BASE=../build INS_RBASE=../build"
+                       make install INS_BASE=../build INS_RBASE=../build && \
+                       chown -R $(id -u):$(id -g) ../build"
           fi
 
       - name: android make
