@@ -37,69 +37,6 @@ jobs:
           ndk-version: r24
           add-to-path: true
 
-      - name: Set up JDK 17
-        if: ${{ matrix.os == 'android' }}
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Set up Android SDK
-        if: ${{ matrix.os == 'android' }}
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK components
-        if: ${{ matrix.os == 'android' }}
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager --install "platform-tools"
-          sdkmanager --install "platforms;android-24"
-          sdkmanager --install "emulator"
-          if [ "${{ matrix.arch }}" = 'aarch64' ]; then
-            # x64 android-aarch64
-            sdkmanager --install "system-images;android-27;default;arm64-v8a"
-          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
-            # x64 android-armv7
-            sdkmanager --install "system-images;android-27;default;armeabi-v7a"
-          fi
-
-      - name: Create AVD
-        if: ${{ matrix.os == 'android' }}
-        run: |
-          if [ "${{ matrix.arch }}" = 'aarch64' ]; then
-            # x64 android-aarch64
-            echo "no" | avdmanager create avd \
-              --force \
-              --name test_avd \
-              --package "system-images;android-27;default;arm64-v8a"
-          elif [ "${{ matrix.arch }}" = 'armv7' ]; then
-            # x64 android-armv7
-            echo "no" | avdmanager create avd \
-              --force \
-              --name test_avd \
-              --package "system-images;android-27;default;armeabi-v7a"
-          fi
-
-      - name: Start Emulator
-        if: ${{ matrix.os == 'android' }}
-        run: |
-          export ANDROID_AVD_HOME=$HOME/.config/.android/avd
-          $ANDROID_SDK_ROOT/emulator/emulator \
-            -avd test_avd \
-            -no-window \
-            -gpu swiftshader_indirect \
-            -noaudio \
-            -no-boot-anim \
-            -verbose &
-
-          adb wait-for-device
-
-          while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
-            echo "Waiting for emulator to boot..."
-            sleep 5
-          done
-          echo "Emulator is ready"
-
       - name: clone
         run: |
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
@@ -150,12 +87,9 @@ jobs:
       - name: android make
         if: ${{ matrix.os == 'android' }}
         run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static binfmt-support
           cd schilytools
-          sed -i 's|rmt=$HOME/android-sdk-linux_x86/platform-tools/adb|rmt=$ANDROID_SDK_ROOT/platform-tools/adb|' "`pwd`/conf/runrmt_android"
-          CONFIG_RMTCALL="`pwd`/conf/runrmt_android"
-          CONFIG_RMTHOST="127.0.0.1"
-          export CONFIG_RMTCALL
-          export CONFIG_RMTHOST
           cd psmake
           sh ./MAKE-all
           cd ..
