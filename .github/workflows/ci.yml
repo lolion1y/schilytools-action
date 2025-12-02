@@ -119,7 +119,7 @@ jobs:
            - { os: linux, arch: aarch64 }
            - { os: linux, arch: armv7 }
            - { os: android, arch: aarch64 }
-           - { os: android, arch: armv7 }
+           #- { os: android, arch: armv7 }
 
     steps:
 
@@ -178,7 +178,7 @@ jobs:
                        sh ./MAKE-all && \
                        cd .. && \
                        ./psmake/smake && \
-                       ./psmake/smake relink LINKMODE=static && \
+                       ./psmake/smake LINKMODE=static CFLAGS='-static' LDFLAGS='-static' && \
                        ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
@@ -193,7 +193,6 @@ jobs:
                        sh ./MAKE-all && \
                        cd .. && \
                        ./psmake/smake && \
-                       ./psmake/smake relink LINKMODE=static && \
                        ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
