@@ -57,7 +57,7 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager --install "platform-tools"
           sdkmanager --install "platforms;android-24"
-          sdkmanager --install "system-images;android-24;default;x86_64"
+          sdkmanager --install "system-images;android-24;default;${{ matrix.arch }}"
           sdkmanager --install "emulator"
 
       - name: Create AVD
@@ -66,7 +66,7 @@ jobs:
           echo "no" | avdmanager create avd \
             --force \
             --name test_avd \
-            --package "system-images;android-24;default;x86_64"
+            --package "system-images;android-24;default;${{ matrix.arch }}"
 
       - name: Start Emulator
         if: ${{ matrix.os == 'android' }}
