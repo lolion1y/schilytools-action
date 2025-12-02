@@ -178,7 +178,7 @@ jobs:
                        sh ./MAKE-all && \
                        cd .. && \
                        ./psmake/smake && \
-                       ./psmake/smake LINKMODE=static CFLAGS='-static' LDFLAGS='-static' && \
+                       ./psmake/smake CFLAGS='-static' LDFLAGS='-static' && \
                        ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
