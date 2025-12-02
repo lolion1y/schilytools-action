@@ -51,8 +51,11 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y make gcc build-essential
             cd schilytools
-            make
-            make install INS_BASE=../build INS_RBASE=../build
+            cd psmake
+            sh ./MAKE-all
+            cd ..
+            ./psmake/smake 
+            ./psmake/smake install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # x64 linux-armv7
             docker run --rm --platform linux/arm/v7 \
@@ -61,8 +64,11 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make && \
-                       make install INS_BASE=../build INS_RBASE=../build && \
+                       cd psmake && \
+                       sh ./MAKE-all && \
+                       cd .. && \
+                       ./psmake/smake && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # x64 linux-aarch64
@@ -72,8 +78,11 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make && \
-                       make install INS_BASE=../build INS_RBASE=../build && \
+                       cd psmake && \
+                       sh ./MAKE-all && \
+                       cd .. && \
+                       ./psmake/smake && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
@@ -133,8 +142,11 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y make gcc build-essential
             cd schilytools
-            make
-            make install INS_BASE=../build INS_RBASE=../build
+            cd psmake
+            sh ./MAKE-all
+            cd ..
+            ./psmake/smake 
+            ./psmake/smake install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # aarch64 linux-armv7
             docker run --rm --platform linux/arm/v7 \
@@ -143,8 +155,11 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make && \
-                       make install INS_BASE=../build INS_RBASE=../build && \
+                       cd psmake && \
+                       sh ./MAKE-all && \
+                       cd .. && \
+                       ./psmake/smake && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
@@ -159,8 +174,11 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make LINKMODE=static && \
-                       make install LINKMODE=static INS_BASE=../build INS_RBASE=../build && \
+                       cd psmake && \
+                       sh ./MAKE-all && \
+                       cd .. && \
+                       ./psmake/smake LINKMODE=static && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # aarch64 android-armv7
@@ -170,8 +188,11 @@ jobs:
               ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y make gcc build-essential && \
-                       make LINKMODE=static && \
-                       make install LINKMODE=static INS_BASE=../build INS_RBASE=../build && \
+                       cd psmake && \
+                       sh ./MAKE-all && \
+                       cd .. && \
+                       ./psmake/smake LINKMODE=static && \
+                       ./psmake/smake install INS_BASE=../build INS_RBASE=../build && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
