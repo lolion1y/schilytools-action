@@ -52,7 +52,7 @@ jobs:
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # x64 linux-armv7
-            docker run --rm --platform linux/armv7 \
+            docker run --rm --platform linux/arm/v7 \
               -v $PWD/schilytools:/src \
               -w /src \
               ubuntu:latest \
@@ -62,7 +62,7 @@ jobs:
                        make install INS_BASE=../build INS_RBASE=../build"
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # x64 linux-aarch64
-            docker run --rm --platform linux/armv7 \
+            docker run --rm --platform linux/arm64 \
               -v $PWD/schilytools:/src \
               -w /src \
               ubuntu:latest \
@@ -147,7 +147,7 @@ jobs:
             make install INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # aarch64 linux-armv7
-            docker run --rm --platform linux/armv7 \
+            docker run --rm --platform linux/arm/v7 \
               -v $PWD/schilytools:/src \
               -w /src \
               ubuntu:latest \
