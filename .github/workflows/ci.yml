@@ -57,10 +57,10 @@ jobs:
           sdkmanager --install "emulator"
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             # x64 android-aarch64
-            sdkmanager --install "system-images;android-24;default;arm64-v8a"
+            sdkmanager --install "system-images;android-27;default;arm64-v8a"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # x64 android-armv7
-            sdkmanager --install "system-images;android-24;default;armeabi-v7a"
+            sdkmanager --install "system-images;android-27;default;armeabi-v7a"
           fi
 
       - name: Create AVD
@@ -71,13 +71,13 @@ jobs:
             echo "no" | avdmanager create avd \
               --force \
               --name test_avd \
-              --package "system-images;android-24;default;arm64-v8a"
+              --package "system-images;android-27;default;arm64-v8a"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # x64 android-armv7
             echo "no" | avdmanager create avd \
               --force \
               --name test_avd \
-              --package "system-images;android-24;default;armeabi-v7a"
+              --package "system-images;android-27;default;armeabi-v7a"
           fi
 
       - name: Start Emulator
