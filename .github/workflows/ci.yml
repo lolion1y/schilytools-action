@@ -34,7 +34,7 @@ jobs:
           add-to-path: true
 
       - name: docker
-        if: ${{ matrix.arch !== 'x86_64' }}
+        if: ${{ matrix.arch != 'x86_64' }}
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
@@ -129,7 +129,7 @@ jobs:
           add-to-path: true
 
       - name: docker
-        if: ${{ matrix.arch !== 'x86_64' }}
+        if: ${{ matrix.arch != 'x86_64' }}
         uses: docker/setup-qemu-action@v3
         with:
           platforms: all
