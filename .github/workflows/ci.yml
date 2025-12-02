@@ -78,9 +78,9 @@ jobs:
             -gpu swiftshader_indirect \
             -noaudio \
             -no-boot-anim \
-            -verbose
+            -verbose &
 
-            
+          adb wait-for-device
 
           while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
             echo "Waiting for emulator to boot..."
