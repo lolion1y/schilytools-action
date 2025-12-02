@@ -57,7 +57,7 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager --install "platform-tools"
           sdkmanager --install "platforms;android-24"
-          sdkmanager --install "system-images;android-24;google_apis;x86_64"
+          sdkmanager --install "system-images;android-24;default;x86_64"
           sdkmanager --install "emulator"
 
       - name: Create AVD
@@ -66,18 +66,19 @@ jobs:
           echo "no" | avdmanager create avd \
             --force \
             --name test_avd \
-            --package "system-images;android-24;google_apis;x86_64"
+            --package "system-images;android-24;default;x86_64"
 
       - name: Start Emulator
         if: ${{ matrix.os == 'android' }}
         run: |
-          avdmanager list avd
+          export ANDROID_AVD_HOME=$HOME/.config/.android/avd
           $ANDROID_SDK_ROOT/emulator/emulator \
             -avd test_avd \
             -no-window \
             -gpu swiftshader_indirect \
             -noaudio \
-            -no-boot-anim
+            -no-boot-anim \
+            -verbose
 
             
 
