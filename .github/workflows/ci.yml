@@ -93,7 +93,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-           # - { os: linux, arch: x86_64 }
            - { os: linux, arch: aarch64 }
            - { os: linux, arch: armv7 }
            # - { os: android, arch: aarch64 }
@@ -124,7 +123,7 @@ jobs:
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             sudo apt-get update
             sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-            make ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc
+            make build ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc
             make install ARCH=armv7 OSNAME=linux CROSS_COMPILE="arm-linux-gnueabihf-" CC="arm-linux-gnueabihf-gcc" CCOM=gcc INS_BASE=../build INS_RBASE=../build
           fi
 
