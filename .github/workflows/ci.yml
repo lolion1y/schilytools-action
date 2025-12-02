@@ -112,19 +112,12 @@ jobs:
         include:
            - { os: linux, arch: aarch64 }
            - { os: linux, arch: armv7 }
-           # - { os: android, arch: aarch64 }
+           - { os: android, arch: aarch64 }
            # - { os: android, arch: armv7 }
 
     steps:
 
       - uses: actions/checkout@v4
-
-      - name: android NDK
-        if: ${{ matrix.os == 'android' }}
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r29
-          add-to-path: true
 
       - name: docker
         if: ${{ matrix.arch != 'x86_64' }}
@@ -161,14 +154,19 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
           # aarch64 android-aarch64
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            make ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC"
-            make install ARCH=aarch64 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
+            make CFLAGS="-static" LDFLAGS="-static"
+            make install CFLAGS="-static" LDFLAGS="-static" INS_BASE=../build INS_RBASE=../build
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
           # aarch64 android-armv7
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi34-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-            make ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC"
-            make install ARCH=armv7 OSNAME=android CCOM=clang "CC_COM=$CC" INS_BASE=../build INS_RBASE=../build
+            docker run --rm --platform linux/arm/v7 \
+              -v $PWD/schilytools:/src \
+              -w /src \
+              ubuntu:latest \
+              bash -c "apt-get update && \
+                       apt-get install -y make gcc build-essential && \
+                       make CFLAGS="-static" LDFLAGS="-static" && \
+                       make install CFLAGS="-static" LDFLAGS="-static" INS_BASE=../build INS_RBASE=../build && \
+                       chown -R $(id -u):$(id -g) ./build"
           fi
 
       - name: ls
