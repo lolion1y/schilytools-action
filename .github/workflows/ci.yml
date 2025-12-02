@@ -51,22 +51,39 @@ jobs:
         if: ${{ matrix.os == 'android' }}
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK components
-        if: ${{ matrix.os == 'android' }}
+      - name: Install armv7 Android SDK components
+        if: ${{ matrix.os == 'android' && matrix.arch == 'armv7' }}
         run: |
           yes | sdkmanager --licenses
           sdkmanager --install "platform-tools"
           sdkmanager --install "platforms;android-24"
-          sdkmanager --install "system-images;android-24;default;${{ matrix.arch }}"
+          sdkmanager --install "system-images;android-24;default;armeabi-v7a"
           sdkmanager --install "emulator"
 
-      - name: Create AVD
+      - name: Install aarch64 Android SDK components
+        if: ${{ matrix.os == 'android' && matrix.arch == 'aarch64' }}
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --install "platform-tools"
+          sdkmanager --install "platforms;android-24"
+          sdkmanager --install "system-images;android-24;default;arm64-v8a"
+          sdkmanager --install "emulator"
+
+      - name: Create armv7 AVD
         if: ${{ matrix.os == 'android' }}
         run: |
           echo "no" | avdmanager create avd \
             --force \
             --name test_avd \
-            --package "system-images;android-24;default;${{ matrix.arch }}"
+            --package "system-images;android-24;default;armeabi-v7a"
+
+      - name: Create aarch64 AVD
+        if: ${{ matrix.os == 'android' }}
+        run: |
+          echo "no" | avdmanager create avd \
+            --force \
+            --name test_avd \
+            --package "system-images;android-24;default;arm64-v8a"
 
       - name: Start Emulator
         if: ${{ matrix.os == 'android' }}
