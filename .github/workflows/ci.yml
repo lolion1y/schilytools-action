@@ -70,7 +70,7 @@ jobs:
           sdkmanager --install "emulator"
 
       - name: Create armv7 AVD
-        if: ${{ matrix.os == 'android' }}
+        if: ${{ matrix.os == 'android' && matrix.arch == 'armv7' }}
         run: |
           echo "no" | avdmanager create avd \
             --force \
@@ -78,7 +78,7 @@ jobs:
             --package "system-images;android-24;default;armeabi-v7a"
 
       - name: Create aarch64 AVD
-        if: ${{ matrix.os == 'android' }}
+        if: ${{ matrix.os == 'android' && matrix.arch == 'aarch64' }}
         run: |
           echo "no" | avdmanager create avd \
             --force \
