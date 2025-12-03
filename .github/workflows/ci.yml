@@ -91,9 +91,16 @@ jobs:
           sudo apt-get install -y qemu-user-static binfmt-support
           cd schilytools
           CONFIG_RMTCALL="`pwd`/conf/runrmt_ssh"
-          CONFIG_RMTHOST="root@127.0.0.1:8022"
+          CONFIG_RMTHOST="test"
           export CONFIG_RMTCALL
           export CONFIG_RMTHOST
+          mkdir ~/.ssh
+          cat > ~/.ssh/config << EOF 
+Host test
+    HostName 127.0.0.1
+    User root
+    Port 8022
+EOF
           cd psmake
           sh ./MAKE-all
           cd ..
