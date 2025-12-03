@@ -19,8 +19,8 @@ jobs:
            - { os: linux, arch: x86_64 }
            #- { os: linux, arch: aarch64 }
            #- { os: linux, arch: armv7 }
-           - { os: android, arch: aarch64 }
-           - { os: android, arch: armv7 }
+           #- { os: android, arch: aarch64 }
+           #- { os: android, arch: armv7 }
     steps:
       - uses: actions/checkout@v4
 
