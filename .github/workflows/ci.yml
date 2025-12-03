@@ -154,7 +154,7 @@ jobs:
                        systemctl restart sshd"
             NDK=${ANDROID_NDK_ROOT}
             SYSROOT=\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot
-            CC="\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang --sysroot=\${SYSROOT}"
+            CC="\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang --sysroot=\${SYSROOT}"
             export NDK
             export SYSROOT
             export CC
