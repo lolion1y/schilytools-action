@@ -100,8 +100,8 @@ jobs:
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             # x64 android-aarch64
             docker run -d --platform linux/arm64 \
-              ubuntu:latest \
               -p 8022:22 \
+              ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y openssh-server && \
                        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
@@ -115,8 +115,8 @@ jobs:
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # x64 android-armv7
             docker run -d --platform linux/arm/v7 \
-              ubuntu:latest \
               -p 8022:22 \
+              ubuntu:latest \
               bash -c "apt-get update && \
                        apt-get install -y openssh-server && \
                        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
