@@ -96,11 +96,11 @@ jobs:
           export CONFIG_RMTHOST
           mkdir ~/.ssh
           cat > ~/.ssh/config << EOF 
-Host test
-    HostName 127.0.0.1
-    User root
-    Port 8022
-EOF
+          Host test
+              HostName 127.0.0.1
+              User root
+              Port 8022
+          EOF
           cd psmake
           sh ./MAKE-all
           cd ..
