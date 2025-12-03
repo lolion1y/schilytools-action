@@ -41,6 +41,16 @@ jobs:
         run: |
           git clone https://codeberg.org/schilytools/schilytools.git schilytools
 
+      - name: android patch
+        if: ${{ matrix.os == 'android' }}
+        run: |
+          git clone https://github.com/termux-user-repository/tur.git tur
+          cd schilytools
+          for patch in ../tur/tur-on-device/schilytools/*.patch; do
+            echo "applying ${patch}"
+            git apply "${patch}"
+          done
+
       - name: linux make
         if: ${{ matrix.os == 'linux' }}
         run: |
@@ -54,7 +64,7 @@ jobs:
             cd ..
             ./psmake/smake
             ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug
-            ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release
+            ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # x64 linux-armv7
             docker run --rm --platform linux/arm/v7 \
@@ -68,7 +78,7 @@ jobs:
                        cd .. && \
                        ./psmake/smake && \
                        ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug && \
-                       ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release && \
+                       ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release && \
                        chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'aarch64' ]; then
             # x64 linux-aarch64
@@ -83,20 +93,22 @@ jobs:
                        cd .. && \
                        ./psmake/smake && \
                        ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug && \
-                       ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release && \
+                       ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
       - name: android make
         if: ${{ matrix.os == 'android' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-user-static binfmt-support
           cd schilytools
           CONFIG_RMTCALL="`pwd`/conf/runrmt_ssh"
           CONFIG_RMTHOST="test"
+          CONFIG_RMTDEBUG="true"
+          CONFIG_RMTCALL=":"
           export CONFIG_RMTCALL
           export CONFIG_RMTHOST
+          export CONFIG_RMTDEBUG
+          export CONFIG_RMTCALL
           mkdir ~/.ssh
           cat > ~/.ssh/config << EOF 
           Host test
@@ -118,10 +130,15 @@ jobs:
                        sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
                        passwd -d && \
                        systemctl restart sshd"
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            NDK=${ANDROID_NDK_ROOT}
+            SYSROOT=\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot
+            CC="\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang --sysroot=\${SYSROOT}"
+            export NDK
+            export SYSROOT
+            export CC
             ./psmake/smake ARCH=aarch64 OSNAME=linux CCOM=clang "CC_COM=$CC"
             ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug
-            ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release
+            ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # x64 android-armv7
             docker run -d --platform linux/arm/v7 \
@@ -133,10 +150,15 @@ jobs:
                        sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
                        passwd -d && \
                        systemctl restart sshd"
-            export CC="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang --sysroot=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+            NDK=${ANDROID_NDK_ROOT}
+            SYSROOT=\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/sysroot
+            CC="\${NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang --sysroot=\${SYSROOT}"
+            export NDK
+            export SYSROOT
+            export CC
             ./psmake/smake ARCH=armv7 OSNAME=linux CCOM=clang "CC_COM=$CC"
             ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug
-            ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release
+            ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release
           fi
 
       - name: ls
@@ -189,7 +211,8 @@ jobs:
             sh ./MAKE-all
             cd ..
             ./psmake/smake 
-            ./psmake/smake install INS_BASE../build/release INS_RBASE../build/release
+            ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug
+            ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # aarch64 linux-armv7
             docker run --rm --platform linux/arm/v7 \
@@ -203,7 +226,7 @@ jobs:
                        cd .. && \
                        ./psmake/smake && \
                        ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug && \
-                       ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release && \
+                       ./psmake/smake install STRIPFLAGS=-s INS_BASE=../build/release INS_RBASE=../build/release && \
                        chown -R $(id -u):$(id -g) ./build"
           fi
 
@@ -212,34 +235,8 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" = 'aarch64' ]; then
             # aarch64 android-aarch64
-            docker run --rm \
-              -v $PWD/schilytools:/src \
-              -w /src \
-              ubuntu:latest \
-              bash -c "apt-get update && \
-                       apt-get install -y make gcc build-essential && \
-                       cd psmake && \
-                       sh ./MAKE-all && \
-                       cd .. && \
-                       ./psmake/smake && \
-                       ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug && \
-                       ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release && \
-                       chown -R $(id -u):$(id -g) ./build"
           elif [ "${{ matrix.arch }}" = 'armv7' ]; then
             # aarch64 android-armv7
-            docker run --rm --platform linux/arm/v7 \
-              -v $PWD/schilytools:/src \
-              -w /src \
-              ubuntu:latest \
-              bash -c "apt-get update && \
-                       apt-get install -y make gcc build-essential && \
-                       cd psmake && \
-                       sh ./MAKE-all && \
-                       cd .. && \
-                       ./psmake/smake && \
-                       ./psmake/smake install INS_BASE=../build/debug INS_RBASE=../build/debug && \
-                       ./psmake/smake install STRIPFLAGS=-s INS_BASE../build/release INS_RBASE../build/release && \
-                       chown -R $(id -u):$(id -g) ./build"
           fi
 
       - name: ls
